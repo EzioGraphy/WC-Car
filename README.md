@@ -6,13 +6,14 @@ The WC-Car is built from an existing RC Car but has been heavily modified. The o
 
 ## Code Example
 
-Motor Control
+### Motor Control
 DC motors can either go forward or reverse depending on the polarity of the circuit, a H bridge is used to change the polarity and PWM is used to control the speed. The H bridge that was used is a l298n clone. The two input directions are toggled and a PWM signal is sent to the H bridge. Below is an example of the rear motor, the front motor which handles the steering is the exact same.
 
+```c
 digitalWrite(Rear_Dir_1, LOW);
 digitalWrite(Rear_Dir_2, HIGH);
 analogWrite(PWM_Rear, 200);
-
+```
 ## Motivation
 
 This project is being used as my year 12 major IPT project, and I thought it would be an interesting concept to explore. 

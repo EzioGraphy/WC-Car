@@ -19,6 +19,12 @@ analogWrite(PWM_REAR, 200);
 
 #### Python using the nampy package
 ```python
+
+from nanpy import ArduinoApi, SerialManager
+
+connection = SerialManager()
+a = ArduinoApi(connection=connection)
+
 a.digitalWrite(REAR_DIR_1, a.LOW);
 a.digitalWrite(REAR_DIR_2, a.HIGH);
 a.analogWrite(PWM_REAR, 200);
@@ -29,7 +35,22 @@ This project is being used as my year 12 major IPT project, and I thought it wou
 
 ## Installation
 
-Several Python packages are required such as ........
+#### Arduino
+The Arduino must be using theh nanpy firmware which will be linked below
+
+#### Raspberry Pi
+The Motion package must be installed which can retrieved through apt-get to host a webcam server. Apache is optional but it can be used to make a nicer looking website with the webcam stream embedded.
+
+The Raspberry Pi must have Python3 installed as the server is written is Python3.5
+
+#### Client
+Python3 for the same reason above
+The OpenCV2 python3 library if you would prefer the webcam stream to be in a window instead of a browser
+
+### Links
+https://nanpy.github.io
+
+http://opencv.org
 
 ## License
 

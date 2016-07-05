@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Wc-car by Loxstomper</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Wc-car</h1>
+        <h2>WiFi controllable car using a Raspberry Pi and an Arduino Uno</h2>
+        <a href="https://github.com/Loxstomper/WC-Car" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="wifi-controlled-car" class="anchor" href="#wifi-controlled-car" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>WiFi Controlled Car</h1>
+
+<h2>
+<a id="synopsis" class="anchor" href="#synopsis" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Synopsis</h2>
+
+<p>The WC-Car is built from an existing RC Car but has been heavily modified. The original control board (reciever, motor control etc.) was removed and replaced with a Raspberry Pi 3, Arduino Uno and a H bridge. The Raspberry Pi recives input from the client via a tcp connection which feeds commands to the Arduino through serial to execute. The Raspberry Pi is also hosting a webcam server. (A Genuino 101 was going to be used, but nampy firmware is not compatible with the x86 architecture.)</p>
+
+<h2>
+<a id="code-examples" class="anchor" href="#code-examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Code Examples</h2>
+
+<h3>
+<a id="motor-control" class="anchor" href="#motor-control" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Motor Control</h3>
+
+<p>DC motors can either go forward or reverse depending on the polarity of the circuit, a H bridge is used to change the polarity and PWM is used to control the speed. The H bridge that was used is a l298n clone. The two input directions are toggled and a PWM signal is sent to the H bridge. Below is an example of the rear motor, the front motor which handles the steering is the exact same.</p>
+
+<h4>
+<a id="arduino-c" class="anchor" href="#arduino-c" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Arduino (C)</h4>
+
+<div class="highlight highlight-source-c"><pre><span class="pl-en">digitalWrite</span>(REAR_DIR_1, LOW);
+<span class="pl-en">digitalWrite</span>(REAR_DIR_2, HIGH);
+<span class="pl-en">analogWrite</span>(PWM_REAR, <span class="pl-c1">200</span>);</pre></div>
+
+<h4>
+<a id="python-using-the-nanpy-package" class="anchor" href="#python-using-the-nanpy-package" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Python using the nanpy package</h4>
+
+<div class="highlight highlight-source-python"><pre>
+<span class="pl-k">from</span> nanpy <span class="pl-k">import</span> ArduinoApi, SerialManager
+
+connection <span class="pl-k">=</span> SerialManager()
+a <span class="pl-k">=</span> ArduinoApi(<span class="pl-v">connection</span><span class="pl-k">=</span>connection)
+
+a.digitalWrite(<span class="pl-c1">REAR_DIR_1</span>, a.<span class="pl-c1">LOW</span>)<span class="pl-id">;</span>
+a.digitalWrite(<span class="pl-c1">REAR_DIR_2</span>, a.<span class="pl-c1">HIGH</span>)<span class="pl-id">;</span>
+a.analogWrite(<span class="pl-c1">PWM_REAR</span>, <span class="pl-c1">200</span>)<span class="pl-id">;</span></pre></div>
+
+<h2>
+<a id="motivation" class="anchor" href="#motivation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Motivation</h2>
+
+<p>This project is being used as my year 12 major IPT project, and I thought it would be an interesting concept to explore. </p>
+
+<h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Requirements</h2>
+
+<h4>
+<a id="arduino" class="anchor" href="#arduino" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Arduino</h4>
+
+<p>The Arduino must be running the nanpy firmware which will be linked below with instructions.</p>
+
+<h4>
+<a id="raspberry-pi" class="anchor" href="#raspberry-pi" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Raspberry Pi</h4>
+
+<p>The Motion package must be installed which can retrieved through apt-get to host a webcam server. Apache is optional but it can be used to make a nicer looking website with the webcam stream embedded.</p>
+
+<p>The Raspberry Pi must be running Python 3.5.x as the server is written is Python 3.5</p>
+
+<p>The Reaspberry Pi must have the nanpy package installed </p>
+
+<h4>
+<a id="client" class="anchor" href="#client" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Client</h4>
+
+<p>The client is also written in Python 3.5 just like the server meaning Python 3.5.x must be installed</p>
+
+<p>The OpenCV2 python 3 library if you would prefer the webcam stream to be in a window instead viewing a web page</p>
+
+<h3>
+<a id="links" class="anchor" href="#links" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Links</h3>
+
+<p><a href="https://nanpy.github.io">https://nanpy.github.io</a></p>
+
+<p><a href="http://opencv.org">http://opencv.org</a></p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h2>
+
+<p>The MIT License (MIT)</p>
+
+<p>Copyright (c) 2016 Lochie Ashcroft</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/Loxstomper/WC-Car/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/Loxstomper/WC-Car/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/Loxstomper/WC-Car"></a> is maintained by <a href="https://github.com/Loxstomper">Loxstomper</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>

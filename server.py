@@ -30,6 +30,7 @@ except:
     print("Failed to establish a connection with the Arduino")
 
 # PinModes
+print("Setting up PinModes on Arduino...")
 a.pinMode(PWM_REAR, a.OUTPUT)
 a.pinMode(REAR_DIR_1, a.OUTPUT)
 a.pinMode(REAR_DIR_2, a.OUTPUT)
@@ -37,21 +38,7 @@ a.pinMode(REAR_DIR_2, a.OUTPUT)
 a.pinMode(PWM_FRONT, a.OUTPUT)
 a.pinMode(FRONT_DIR_1, a.OUTPUT)
 a.pinMode(FRONT_DIR_2, a.OUTPUT)
-
-################
-#
-# Set up Server #
-#
-
-
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-try:
-    s.bind(('localhost', 5000))
-    s.listen(1)
-except Exception as e:
-    print(e)
-    # DEBUG LED 0.5 second pulses
-
+print("Finished setting up PinModes")
 
 ################
 #              #
@@ -60,40 +47,34 @@ except Exception as e:
 ################
 
 def reset_steering():
+    print("resetting steering")
+    try:
+        conn.send("Moving forward...".encode())
+    except:
+        reset_steering()
+        stop()
     a.analogWrite(PWM_FRONT, 0)
     # springs pull wheels back to centre
 
 
 def stop():
     print("stopping")
-    a.analogWrite(PWM_FRONT, 0)
-    a.analogWrite(PWM_REAR, 0)
-
-
-def forward():
-    print("moving forward")
-
-    # car will stop if it has lost connection with client
     try:
         conn.send("Moving forward...".encode())
     except:
         reset_steering()
         stop()
-
-    a.digitalWrite(REAR_DIR_1, a.LOW)
-    a.digitalWrite(REAR_DIR_2, a.HIGH)
-    a.analogWrite(PWM_REAR, 255) # full speed
-    sleep(2)
-    a.analogWrite(PWM_REAR, 0)  # so the car doesnt drive off if connection is lost
-    sleep(1)
+        
+    a.analogWrite(PWM_FRONT, 0)
+    a.analogWrite(PWM_REAR, 0)
 
 
-def reverse():
-    print("reversing")
+def forward():
+    print("forward")
 
     # car will stop if it has lost connection with client
     try:
-        conn.send("Reversing...".encode())
+        conn.send("Moving forward...".encode())
     except:
         reset_steering()
         stop()
@@ -105,6 +86,24 @@ def reverse():
     a.analogWrite(PWM_REAR, 0)
     sleep(1)
 
+    
+def reverse():
+    print("reversing")
+
+    # car will stop if it has lost connection with client
+    try:
+        conn.send("Reversing...".encode())
+    except:
+        reset_steering()
+        stop()
+
+    a.digitalWrite(REAR_DIR_1, a.LOW)
+    a.digitalWrite(REAR_DIR_2, a.HIGH)
+    a.analogWrite(PWM_REAR, 255) # full speed
+    sleep(2)
+    a.analogWrite(PWM_REAR, 0)  # so the car doesnt drive off if connection is lost
+    sleep(1)
+    
 
 def turn_left():
     print("turning left")
@@ -154,14 +153,25 @@ directions = {
 #     Main     #
 #              #
 ################
+HOST = ''
+PORT = 9000
+BUFFER_SIZE = 20
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind((HOST, PORT))
+print("binded server")
+print("awaiting connection...")
 
 while True:
+    s.listen(5)
     conn, addr = s.accept()
     print("Connection from ", addr)
-    data = conn.recv(1024)
+    data = conn.recv(BUFFER_SIZE)
     # DEBUG LED 2 pulses
     try:
+        print(data.decode())
         move = directions[data.decode()]
         move()
     except:
         print("Incorrect input")
+        conn.send("Incorrect input".encode())
